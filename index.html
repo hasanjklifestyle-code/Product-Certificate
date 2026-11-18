@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>UOLL Certificate Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f6f7f5;--c:#fff;--ink:#17211b;--mu:#6a766f;--ln:#e6e9e4;--g:#1f7a4d;--gd:#17603f;--r:#a3341f}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1713;--c:#16211b;--ink:#e9efea;--mu:#93a39a;--ln:#243229;--g:#3fa56a;--gd:#6fcf97;--r:#f08a78}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'DM Sans',system-ui,sans-serif}
+h1,h2,h3{margin:0;font-weight:600}h1{font-size:24px}h3{font-size:15px;margin-bottom:8px}
+.app{display:flex;min-height:100vh}
+aside{width:220px;background:var(--c);border-right:1px solid var(--ln);padding:18px 12px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{font-weight:600;padding:0 8px 18px;color:var(--gd)}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:9px 12px;border-radius:8px;cursor:pointer}
+nav button:hover{background:rgba(31,122,77,.08)}nav button.on{background:rgba(31,122,77,.12);color:var(--gd);font-weight:600}
+main{flex:1;padding:24px 28px 60px;min-width:0;max-width:1150px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.mu{color:var(--mu)}.card{background:var(--c);border:1px solid var(--ln);border-radius:12px;padding:18px;margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px}.two{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+.kpi{cursor:pointer}.kpi:hover{border-color:var(--g)}.kpi b{display:block;font-size:28px;font-weight:600;margin-top:6px}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{padding:8px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--c);width:100%}
+.btn{padding:8px 14px;border-radius:8px;border:1px solid var(--ln);background:var(--c);cursor:pointer;width:auto}.btn.p{background:var(--g);color:#fff;border-color:var(--g)}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;font-weight:500;color:var(--mu);padding:10px 12px;border-bottom:1px solid var(--ln)}td{padding:12px;border-top:1px solid var(--ln)}
+tr:first-child td{border-top:0}tr.c{cursor:pointer}tr.c:hover{background:rgba(31,122,77,.06)}.w{overflow-x:auto}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:500;white-space:nowrap}
+.Available{background:#e8f4ec;color:#1d6a3f}.Expiring{background:#fdf3dc;color:#8a5f0a}.Expired{background:#fbe6e2;color:#a3341f}.Missing{background:#eceaf5;color:#55468a}.opt{background:var(--ln);color:var(--mu)}.int{background:#eceaf5;color:#55468a}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;min-width:70px}.bar i{display:block;height:100%}
+.ring{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:conic-gradient(var(--g) calc(var(--p)*1%),var(--ln) 0)}
+.ring i{width:84px;height:84px;border-radius:50%;background:var(--c);display:grid;place-items:center;font:600 22px 'DM Sans';font-style:normal}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--ln)}.row>:first-child{flex:1;min-width:0}
+dialog{border:0;border-radius:14px;padding:22px;width:min(660px,calc(100% - 24px));background:var(--c);color:var(--ink);max-height:92vh}dialog::backdrop{background:rgba(10,25,15,.55)}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+.login{max-width:340px;margin:12vh auto;padding:0 16px}
+.wm{position:absolute;inset:-30%;overflow:hidden;pointer-events:none;display:flex;flex-wrap:wrap;gap:50px;opacity:.15;font-weight:700;transform:rotate(-25deg);user-select:none;color:#000}
+@media(max-width:820px){.app{flex-direction:column}aside{position:fixed;bottom:0;left:0;right:0;top:auto;width:auto;height:auto;z-index:9;display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--ln);border-right:0}.logo{display:none}nav{display:flex;flex:1}nav button{flex:1;text-align:center;font-size:12px;padding:8px 2px}main{padding:16px 14px 90px}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<dialog id="dlg"></dialog>
+<script>
+const sb=supabase.createClient('https://pijmheypngnauqlrexne.supabase.co','sb_publishable_dwjTVDKsyt-WMCsvptxBmQ_zW3XjFoM');
+const $=s=>document.querySelector(s),Dg=$('#dlg');
+const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T0=new Date();T0.setHours(0,0,0,0);
+const dd=d=>d?Math.round((new Date(d+'T00:00:00')-T0)/864e5):null;
+const fd=d=>d?new Date(String(d).slice(0,10)+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+const S={view:'dash',pid:null,f:'All',th:90,warn:30,grace:30,q:''};let me=null,D={},RW=null,SEL=new Set(),PL=[];
+const dlg=h=>{Dg.innerHTML=h;if(!Dg.open)Dg.showModal()};
+const tg=s=>`<span class="tag ${s}">${s==='Expiring'?'Expiring soon':s}</span>`;
+const nt=n=>`<div style="margin:2px 0"><span class="tag ${n.visibility==='internal'?'int':'opt'}">${n.visibility==='internal'?'Internal':'External'}</span> ${E(n.body)}</div>`;
+// ---------- auth ----------
+sb.auth.onAuthStateChange((_e,s)=>{if(s&&me&&me.id===s.user.id)return;setTimeout(()=>boot(s),0)});
+async function boot(s){
+ if(!s){me=null;return loginUI()}
+ const r=await sb.from('profiles').select('*').eq('id',s.user.id).single();me=r.data;
+ if(!me||!me.active){$('#root').innerHTML='<div class="login"><h2>Access not enabled</h2><p class="mu">Ask the Admin to activate your account.</p><button class="btn" onclick="sb.auth.signOut()">Sign out</button></div>';return}
+ await load();S.view=me.role==='user'?'prods':'dash';render()}
+function loginUI(m){$('#root').innerHTML=`<div class="login"><h1 style="color:var(--gd)">UOLL Certificate Hub</h1><p class="mu">Sign in to continue</p><label>Email</label><input id="em" type="email"><label>Password</label><input id="pw" type="password" onkeydown="event.key==='Enter'&&login()"><p id="er" style="color:var(--r)">${m||''}</p><button class="btn p" style="width:100%" onclick="login()">Sign in</button></div>`}
+async function login(){const r=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(r.error)$('#er').textContent=r.error.message}
+// ---------- data ----------
+async function load(){const q=t=>sb.from(t).select('*');
+ const r=await Promise.all([q('certificate_types').order('name'),q('vendors'),q('products').order('name'),q('product_requirements'),q('certificates').eq('archived',false),q('certificate_products'),q('certificate_versions').order('version_no',{ascending:false}),q('notes').order('created_at',{ascending:false})]);
+ ['types','vendors','products','reqs','certs','cp','vers','notes'].forEach((k,i)=>{D[k]=r[i].data||[];if(r[i].error)console.error(k,r[i].error)});
+ D.ty=Object.fromEntries(D.types.map(t=>[t.id,t]));D.vn=Object.fromEntries(D.vendors.map(v=>[v.id,v.name]));D.pmap=Object.fromEntries(D.products.map(p=>[p.id,p]));RW=null}
+const rule=c=>c.rule_override||D.ty[c.type_id].validity;
+const vd=c=>{const r=rule(c);return r==='fixed'?'Expires '+fd(c.expiry_date):r==='anniversary'?'Anniversary '+fd(c.anniversary_date):'No expiry'};
+const flag=c=>{if(rule(c)!=='anniversary'||!c.anniversary_date)return'';const n=dd(c.anniversary_date);return n<-S.grace?'Update overdue':n<=S.warn?'Update due':''};
+const cst=c=>{if(rule(c)!=='fixed'||!c.expiry_date)return'Available';const n=dd(c.expiry_date);return n<0?'Expired':n<=S.th?'Expiring':'Available'};
+const days=c=>rule(c)==='fixed'&&c.expiry_date?dd(c.expiry_date)+' days':'N/A';
+function stat(pid,tid){const ids=new Set(D.cp.filter(x=>x.product_id===pid).map(x=>x.certificate_id)),o={Available:0,Expiring:1,Expired:2};
+ const cs=D.certs.filter(c=>c.type_id===tid&&ids.has(c.id)).map(c=>({c,s:cst(c)})).sort((a,b)=>o[a.s]-o[b.s]);return cs.length?cs[0]:{s:'Missing'}}
+const rows=()=>RW||(RW=D.reqs.filter(r=>D.pmap[r.product_id]&&D.ty[r.type_id]).map(r=>({p:D.pmap[r.product_id],t:D.ty[r.type_id],m:r.mandatory,...stat(r.product_id,r.type_id)})));
+const comp=pid=>{const m=rows().filter(x=>x.p.id===pid&&x.m);return m.length?Math.round(m.filter(x=>x.s==='Available'||x.s==='Expiring').length/m.length*100):100};
+const col=v=>v>=100?'#2f7d4b':v>=60?'#c58f1f':'#b3402e';
+// ---------- layout ----------
+const go=(v,f)=>{S.view=v;if(f)S.f=f;render()},openP=id=>{S.pid=id;S.view='pd';render()};
+const hd=(t,sub,btn='')=>`<div class="top"><div><h1>${t}</h1><div class="mu">${sub}</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${btn}<span class="mu">${E(me.full_name)} · ${me.role}</span><button class="btn" onclick="sb.auth.signOut()">Sign out</button></div></div>`;
+function render(){const nv=[['dash','Dashboard'],['docs','Documents'],['prods','Products'],['certs','Certificates']].filter(n=>me.role!=='user'||!['dash','docs'].includes(n[0]));
+ $('#root').innerHTML=`<div class="app"><aside><div class="logo">UOLL Certificate Hub</div><nav>${nv.map(n=>`<button class="${S.view===n[0]||(S.view==='pd'&&n[0]==='prods')?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')}</nav></aside><main>${V[S.view]()}</main></div>`;if(S.view==='prods')pl();scrollTo(0,0)}
+const V={
+dash(){const r=rows(),m=r.filter(x=>x.m),ok=m.filter(x=>x.s==='Available'||x.s==='Expiring').length,pc=m.length?Math.round(ok/m.length*100):0,c=s=>r.filter(x=>x.s===s).length;
+ const k=[['Products',D.products.length,'prods'],['Certificates',D.certs.length,'certs'],['Missing',c('Missing'),'docs','Missing'],['Expiring soon',c('Expiring'),'docs','Expiring'],['Expired',c('Expired'),'docs','Expired']];
+ const low=D.products.map(p=>[p,comp(p.id)]).sort((a,b)=>a[1]-b[1]).slice(0,6),due=D.certs.filter(flag);
+ const byT=D.types.map(t=>{const x=r.filter(y=>y.t.id===t.id),n=s=>x.filter(y=>y.s===s).length;return[t.name,n('Available'),n('Expiring'),n('Expired'),n('Missing')]}).filter(x=>x[1]+x[2]+x[3]+x[4]);
+ return hd('Dashboard','Compliance overview')+(D.products.length?'':'<div class="card">No products yet. Go to Products and add the first one.</div>')+
+ `<div class="card" style="display:flex;gap:24px;align-items:center"><div class="ring" style="--p:${pc}"><i>${pc}%</i></div><div><h3>Mandatory compliance</h3><div class="mu">${ok} of ${m.length} mandatory documents are on file and valid. Optional documents are not counted.</div></div></div>
+ <div class="grid">${k.map(x=>`<div class="card kpi" style="margin:0" onclick="go('${x[2]}','${x[3]||'All'}')"><span class="mu">${x[0]}</span><b>${x[1]}</b></div>`).join('')}</div>
+ <div class="two"><div class="card"><h3>Needs attention first</h3>${low.map(([p,v])=>`<div class="row" style="cursor:pointer" onclick="openP('${p.id}')"><div>${E(p.name)}</div><div class="bar" style="width:90px"><i style="width:${v}%;background:${col(v)}"></i></div><b>${v}%</b></div>`).join('')||'<span class="mu">—</span>'}</div>
+ <div class="card"><h3>Annual updates due</h3>${due.map(c=>`<div class="row" style="cursor:pointer" onclick="certView('${c.id}')"><div>${E(D.ty[c.type_id].name)}<div class="mu">${E(c.certificate_no||'')} · ${vd(c)}</div></div><span class="tag Expiring">${flag(c)}</span></div>`).join('')||'<span class="mu">Nothing due</span>'}</div></div>
+ <div class="card w"><h3>Certificate-wise status</h3><table><tr><th>Type</th><th>Available</th><th>Expiring</th><th>Expired</th><th>Missing</th></tr>${byT.map(x=>`<tr><td>${E(x[0])}</td><td>${x[1]}</td><td>${x[2]}</td><td>${x[3]}</td><td>${x[4]}</td></tr>`).join('')}</table></div>`},
+docs(){let r=rows();if(S.f!=='All')r=r.filter(x=>x.s===S.f);
+ return hd('Documents','Required documents by product')+`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${['All','Missing','Expiring','Expired','Available'].map(f=>`<button class="btn ${S.f===f?'p':''}" onclick="S.f='${f}';render()">${f}</button>`).join('')}</div><div class="card w"><table><tr><th>Product</th><th>Document</th><th>Rule</th><th>Status</th><th>Validity</th></tr>${r.map(x=>`<tr class="c" onclick="openP('${x.p.id}')"><td>${E(x.p.name)}</td><td>${E(x.t.name)}</td><td>${x.m?'Mandatory':'<span class="tag opt">Optional</span>'}</td><td>${tg(x.s)}</td><td>${x.c?vd(x.c):'—'}</td></tr>`).join('')||'<tr><td colspan=5 class="mu">Nothing found</td></tr>'}</table></div>`},
+prods(){return hd('Products','One entry per product',me.role==='admin'?'<button class="btn p" onclick="prodForm()">Add product</button>':'')+`<input placeholder="Search name, SKU, brand, vendor" value="${E(S.q)}" oninput="S.q=this.value;pl()" style="margin-bottom:12px"><div class="card w" id="pt"></div>`},
+certs(){return hd('Certificates','One certificate can apply to many products',me.role==='admin'?'<button class="btn p" onclick="certForm()">Add certificate</button>':'')+`<div class="card w"><table><tr><th>Number</th><th>Type</th><th>Products</th><th>Validity</th><th>Status</th></tr>${D.certs.map(c=>`<tr class="c" onclick="certView('${c.id}')"><td>${E(c.certificate_no||'—')}</td><td>${E(D.ty[c.type_id].name)}</td><td>${D.cp.filter(x=>x.certificate_id===c.id).length}</td><td>${vd(c)}</td><td>${tg(cst(c))} ${flag(c)?`<span class="tag Expiring">${flag(c)}</span>`:''}</td></tr>`).join('')||'<tr><td colspan=5 class="mu">No certificates yet</td></tr>'}</table></div>`},
+pd(){const p=D.pmap[S.pid],r=rows().filter(x=>x.p.id===p.id),c=s=>r.filter(x=>x.s===s).length,pc=comp(p.id),ad=me.role==='admin';
+ const sec=g=>{const x=r.filter(y=>y.t.grp===g);return x.length?`<div class="card w"><h3>${g} certificates</h3><table><tr><th>Certificate</th><th>File</th><th>Issued</th><th>Validity</th><th>Days left</th><th>Status</th><th>Notes</th></tr>${x.map(y=>{const cv=y.c&&D.vers.find(v=>v.certificate_id===y.c.id&&v.is_current&&v.file_path),ns=D.notes.filter(n=>(y.c&&n.certificate_id===y.c.id)||(n.product_id===p.id&&n.type_id===y.t.id));
+ return `<tr><td>${E(y.t.name)}${y.m?'':' <span class="tag opt">Optional</span>'}</td><td>${cv?`<button class="btn" onclick="openFile('${cv.file_path}')">Open</button>`:'<span class="mu">No file</span>'}</td><td>${y.c?fd(y.c.issue_date):'—'}</td><td>${y.c?vd(y.c):'—'}</td><td>${y.c?days(y.c):'—'}</td><td>${tg(y.s)}${y.c&&flag(y.c)?` <span class="tag Expiring">${flag(y.c)}</span>`:''}</td><td>${ns.map(nt).join('')||'—'}</td></tr>`}).join('')}</table></div>`:''};
+ const pn=D.notes.filter(n=>n.product_id===p.id&&!n.type_id);
+ return hd(E(p.name),`<a href="#" onclick="go('prods');return false" style="color:var(--gd)">← Products</a> · SKU ${E(p.sku||'—')} · ${E(p.brand||'')} · Vendor: ${E(D.vn[p.vendor_id]||'—')}`,`<button class="btn" onclick="pdf('${p.id}')">Status PDF</button>${ad?`<button class="btn" onclick="prodForm('${p.id}')">Edit</button><button class="btn" onclick="noteForm('${p.id}')">Add note</button>`:''}`)+
+ `<div class="card" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap"><div class="ring" style="--p:${pc}"><i>${pc}%</i></div><div style="display:flex;gap:28px;flex-wrap:wrap">${[['Valid',c('Available')],['Expiring soon',c('Expiring')],['Expired',c('Expired')],['Need to collect',c('Missing')]].map(x=>`<div><span class="mu">${x[0]}</span><div style="font-size:24px;font-weight:600">${x[1]}</div></div>`).join('')}</div></div>`+sec('Global')+sec('National')+(pn.length?`<div class="card"><h3>Notes</h3>${pn.map(nt).join('')}</div>`:'')}};
+function pl(){const q=S.q.toLowerCase(),el=$('#pt');if(!el)return;const l=D.products.filter(p=>(p.name+(p.sku||'')+(p.brand||'')+(D.vn[p.vendor_id]||'')).toLowerCase().includes(q));
+ el.innerHTML=`<table><tr><th>Product</th><th>SKU</th><th>Brand</th><th>Vendor</th><th>Compliance</th></tr>${l.map(p=>{const v=comp(p.id);return`<tr class="c" onclick="openP('${p.id}')"><td>${E(p.name)}</td><td>${E(p.sku||'—')}</td><td>${E(p.brand||'—')}</td><td>${E(D.vn[p.vendor_id]||'—')}</td><td><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="width:70px"><i style="width:${v}%;background:${col(v)}"></i></div>${v}%</div></td></tr>`}).join('')||'<tr><td colspan=5 class="mu">No products</td></tr>'}</table>`}
+// ---------- forms ----------
+const fail=(e,b)=>{alert(e.message||e);if(b)b.disabled=false};
+function prodForm(id){const p=id?D.pmap[id]:{},rq=Object.fromEntries(D.reqs.filter(r=>r.product_id===id).map(r=>[r.type_id,r.mandatory?'m':'o']));
+ dlg(`<h2>${id?'Edit':'Add'} product</h2><label>Name</label><input id="pn" value="${E(p.name)}"><div style="display:flex;gap:10px"><div style="flex:1"><label>SKU</label><input id="pk" value="${E(p.sku)}"></div><div style="flex:1"><label>Brand</label><input id="pb" value="${E(p.brand)}"></div></div><div style="display:flex;gap:10px"><div style="flex:1"><label>Category</label><input id="pc" value="${E(p.category)}"></div><div style="flex:1"><label>Origin country</label><input id="po" value="${E(p.origin_country)}"></div></div><label>Vendor (type a new one to create it)</label><input id="pv" list="vl" value="${E(D.vn[p.vendor_id]||'')}"><datalist id="vl">${D.vendors.map(v=>`<option value="${E(v.name)}">`).join('')}</datalist><label>Required documents</label>${D.types.filter(t=>t.active).map(t=>{const cur=rq[t.id]??(id?'':t.default_mandatory?'m':'');return`<div class="row"><div>${E(t.name)}</div><select class="rq" data-t="${t.id}" style="width:150px"><option value="">Not required</option><option value="m" ${cur==='m'?'selected':''}>Mandatory</option><option value="o" ${cur==='o'?'selected':''}>Optional</option></select></div>`}).join('')}<div class="row" style="border:0"><span></span><button class="btn" onclick="Dg.close()">Cancel</button><button class="btn p" id="sv" onclick="saveProd('${id||''}')">Save</button></div>`)}
+async function saveProd(id){const b=$('#sv'),name=$('#pn').value.trim();if(!name)return alert('Name is required');b.disabled=true;let vid=null;const vn=$('#pv').value.trim();
+ if(vn){let v=D.vendors.find(x=>x.name===vn);if(!v){const r=await sb.from('vendors').insert({name:vn}).select().single();if(r.error)return fail(r.error,b);v=r.data}vid=v.id}
+ const row={name,sku:$('#pk').value.trim()||null,brand:$('#pb').value.trim()||null,category:$('#pc').value.trim()||null,origin_country:$('#po').value.trim()||null,vendor_id:vid,updated_at:new Date().toISOString()};
+ const r=id?await sb.from('products').update(row).eq('id',id).select().single():await sb.from('products').insert(row).select().single();if(r.error)return fail(r.error,b);
+ const pid=r.data.id;await sb.from('product_requirements').delete().eq('product_id',pid);
+ const rq=[...document.querySelectorAll('.rq')].filter(s=>s.value).map(s=>({product_id:pid,type_id:s.dataset.t,mandatory:s.value==='m'}));
+ if(rq.length){const e=(await sb.from('product_requirements').insert(rq)).error;if(e)return fail(e,b)}
+ Dg.close();await load();openP(pid)}
+function certForm(){SEL=new Set();dlg(`<h2>Add certificate</h2><label>Type</label><select id="ct" onchange="ctc()">${D.types.filter(t=>t.active).map(t=>`<option value="${t.id}">${E(t.name)}</option>`).join('')}</select><label>Certificate number</label><input id="cn"><label>Issuing authority</label><input id="ca"><div style="display:flex;gap:10px"><div style="flex:1"><label>Issue date</label><input id="ci" type="date"></div><div style="flex:1"><label id="cdl">Expiry date</label><input id="cx" type="date"></div></div><label>Applicable products (<span id="sc">0</span> selected)</label><div style="display:flex;gap:8px"><input id="ps" placeholder="Search products" oninput="plist()"><button class="btn" onclick="selAll()">Select all shown</button></div><div id="plb" style="max-height:170px;overflow:auto;margin-top:6px"></div><label>File (PDF or image)</label><input id="cf" type="file" accept=".pdf,image/*"><label>Note (optional)</label><textarea id="cno" rows="2"></textarea><select id="cv" style="margin-top:6px"><option value="internal">Internal note</option><option value="external">External note</option></select><div class="row" style="border:0"><span></span><button class="btn" onclick="Dg.close()">Cancel</button><button class="btn p" id="sv" onclick="saveCert()">Save</button></div>`);ctc();plist()}
+function ctc(){const r=D.ty[$('#ct').value].validity;$('#cdl').textContent=r==='anniversary'?'Anniversary date':r==='fixed'?'Expiry date':'No expiry for this type';$('#cx').disabled=r==='none'}
+function plist(){const q=($('#ps').value||'').toLowerCase();PL=D.products.filter(p=>(p.name+(p.sku||'')).toLowerCase().includes(q));
+ $('#plb').innerHTML=PL.map(p=>`<label style="display:flex;gap:8px;margin:0;padding:5px 0;color:var(--ink)"><input type="checkbox" style="width:auto" ${SEL.has(p.id)?'checked':''} onchange="tog('${p.id}',this.checked)">${E(p.name)}</label>`).join('')||'<span class="mu">No products</span>';$('#sc').textContent=SEL.size}
+const tog=(id,on)=>{on?SEL.add(id):SEL.delete(id);$('#sc').textContent=SEL.size},selAll=()=>{PL.forEach(p=>SEL.add(p.id));plist()};
+async function addVersion(c,no,file,f,rem){let path=null;
+ if(file){path=`${c.id}/v${no}-${Date.now()}.${(file.name.split('.').pop()||'pdf').toLowerCase()}`;const u=await sb.storage.from('certificates').upload(path,file);if(u.error){alert(u.error.message);return false}}
+ await sb.from('certificate_versions').update({is_current:false}).eq('certificate_id',c.id).eq('is_current',true);
+ const e=(await sb.from('certificate_versions').insert({certificate_id:c.id,version_no:no,file_path:path,issue_date:f.issue_date,expiry_date:f.expiry_date,anniversary_date:f.anniversary_date,remarks:rem||null,is_current:true})).error;if(e){alert(e.message);return false}return true}
+async function saveCert(){const b=$('#sv');if(!SEL.size)return alert('Select at least one product');b.disabled=true;const t=D.ty[$('#ct').value],v=$('#cx').value||null;
+ const f={issue_date:$('#ci').value||null,expiry_date:t.validity==='fixed'?v:null,anniversary_date:t.validity==='anniversary'?v:null};
+ const r=await sb.from('certificates').insert({type_id:t.id,certificate_no:$('#cn').value.trim()||null,issuing_authority:$('#ca').value.trim()||null,...f}).select().single();if(r.error)return fail(r.error,b);const c=r.data;
+ const e=(await sb.from('certificate_products').insert([...SEL].map(p=>({certificate_id:c.id,product_id:p})))).error;if(e)return fail(e,b);
+ if(!await addVersion(c,1,$('#cf').files[0],f)){b.disabled=false;return}
+ const n=$('#cno').value.trim();if(n)await sb.from('notes').insert({certificate_id:c.id,body:n,visibility:$('#cv').value});
+ Dg.close();await load();render()}
+function certView(id){const c=D.certs.find(x=>x.id===id),t=D.ty[c.type_id],ps=D.cp.filter(x=>x.certificate_id===id).map(x=>D.pmap[x.product_id]).filter(Boolean),vs=D.vers.filter(v=>v.certificate_id===id),ns=D.notes.filter(n=>n.certificate_id===id),r=t.validity;
+ dlg(`<h2>${E(t.name)}</h2><p class="mu">${E(c.certificate_no||'')} · ${E(c.issuing_authority||'')}</p><p>Issued ${fd(c.issue_date)} · ${vd(c)} ${tg(cst(c))}</p><h3>Applicable products: ${ps.length}</h3><div style="max-height:150px;overflow:auto">${ps.map(p=>`<div class="row"><div>${E(p.name)}</div></div>`).join('')}</div><h3 style="margin-top:14px">Versions</h3>${vs.map(v=>`<div class="row"><div>Version ${v.version_no}${v.is_current?' (current)':''}<div class="mu">${fd(v.uploaded_at)}${v.remarks?' · '+E(v.remarks):''}</div></div>${v.file_path?`<button class="btn" onclick="openFile('${v.file_path}')">Open</button>`:'<span class="mu">No file</span>'}</div>`).join('')}${ns.length?'<h3 style="margin-top:14px">Notes</h3>'+ns.map(nt).join(''):''}
+ ${me.role==='admin'?`<h3 style="margin-top:16px">Upload new version</h3><input id="nf" type="file" accept=".pdf,image/*"><div style="display:flex;gap:10px"><div style="flex:1"><label>Issue date</label><input id="ni" type="date"></div><div style="flex:1"><label>${r==='anniversary'?'Anniversary date':'Expiry date'}</label><input id="nx" type="date" ${r==='none'?'disabled':''}></div></div><label>Remarks</label><input id="nr"><div class="row" style="border:0"><button class="btn" onclick="archive('${id}')">Archive</button><button class="btn" onclick="Dg.close()">Close</button><button class="btn p" onclick="newVer('${id}')">Save new version</button></div>`:'<div class="row" style="border:0"><span></span><button class="btn" onclick="Dg.close()">Close</button></div>'}`)}
+async function newVer(id){const c=D.certs.find(x=>x.id===id),r=rule(c),v=$('#nx').value||null,f={issue_date:$('#ni').value||null,expiry_date:r==='fixed'?v:null,anniversary_date:r==='anniversary'?v:null},no=Math.max(0,...D.vers.filter(x=>x.certificate_id===id).map(x=>x.version_no))+1;
+ if(!await addVersion(c,no,$('#nf').files[0],f,$('#nr').value))return;
+ await sb.from('certificates').update({...f,updated_at:new Date().toISOString()}).eq('id',id);Dg.close();await load();render()}
+async function archive(id){if(!confirm('Archive this certificate? It stays in history but leaves the active list.'))return;const e=(await sb.from('certificates').update({archived:true}).eq('id',id)).error;if(e)return alert(e.message);Dg.close();await load();render()}
+function noteForm(pid){dlg(`<h2>Add note</h2><textarea id="nb" rows="3"></textarea><select id="nv" style="margin-top:8px"><option value="internal">Internal (Admin and Management only)</option><option value="external">External (everyone)</option></select><div class="row" style="border:0"><span></span><button class="btn" onclick="Dg.close()">Cancel</button><button class="btn p" onclick="saveNote('${pid}')">Save</button></div>`)}
+async function saveNote(pid){const b=$('#nb').value.trim();if(!b)return;const e=(await sb.from('notes').insert({product_id:pid,body:b,visibility:$('#nv').value})).error;if(e)return alert(e.message);Dg.close();await load();render()}
+async function openFile(path){const r=await sb.storage.from('certificates').createSignedUrl(path,300);if(r.error)return alert(r.error.message);
+ const img=/\.(png|jpe?g|webp)$/i.test(path),w=`CONFIDENTIAL · ${me.full_name} · ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+ dlg(`<div style="position:relative;height:70vh;background:#fafafa;border-radius:8px;overflow:hidden">${img?`<img src="${r.data.signedUrl}" style="width:100%;height:100%;object-fit:contain">`:`<iframe src="${r.data.signedUrl}#toolbar=0" style="width:100%;height:100%;border:0"></iframe>`}<div class="wm">${Array(90).fill(`<span>${E(w)}</span>`).join('')}</div></div><div class="row" style="border:0"><span class="mu">View-only copy with your name watermark.</span><button class="btn" onclick="Dg.close()">Close</button></div>`)}
+// ---------- PDF ----------
+function pdf(pid){const p=D.pmap[pid],r=rows().filter(x=>x.p.id===pid),d=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),A=s=>String(s).replace('—','-');
+ d.setFillColor(31,122,77);d.rect(0,0,210,22,'F');d.setTextColor(255);d.setFontSize(14);d.text('Ultimate Organic Life Limited',14,14);d.setTextColor(30);d.setFontSize(15);d.text('Certificate Status Report',14,34);d.setFontSize(11);d.text(p.name,14,42);d.setFontSize(9);
+ d.text(`SKU ${p.sku||'-'}  |  Vendor: ${D.vn[p.vendor_id]||'-'}  |  Mandatory compliance: ${comp(pid)}%`,14,48);
+ const W=[38,26,34,16,30,38],head=['Certificate','Number','Validity','Days','Status','Notes'];let y=56;
+ const line=(cells,hd)=>{const ls=cells.map((c,i)=>d.splitTextToSize(String(c),W[i]-3)),h=Math.max(...ls.map(a=>a.length))*4.4+3.5;if(y+h>278){d.addPage();y=20}
+  if(hd){d.setFillColor(231,239,231);d.rect(14,y,182,h,'F');d.setFont('helvetica','bold')}else d.setFont('helvetica','normal');let x=14;ls.forEach((a,i)=>{d.text(a,x+1.5,y+5);x+=W[i]});d.setDrawColor(205);d.line(14,y+h,196,y+h);y+=h};
+ line(head,1);r.forEach(x=>{const ns=D.notes.filter(n=>(x.c&&n.certificate_id===x.c.id)||(n.product_id===pid&&n.type_id===x.t.id)).map(n=>(n.visibility==='internal'?'[Internal] ':'')+n.body).join('; ');
+  line([x.t.name+(x.m?'':' (opt.)'),x.c?x.c.certificate_no||'-':'-',x.c?A(vd(x.c)):'-',x.c?days(x.c).replace(' days',''):'-',(x.s==='Expiring'?'Expiring soon':x.s)+(x.c&&flag(x.c)?' ('+flag(x.c)+')':''),ns||'-'])});
+ const n=d.getNumberOfPages();for(let i=1;i<=n;i++){d.setPage(i);d.setFontSize(8);d.setTextColor(120);d.text(`Generated ${new Date().toLocaleDateString('en-GB')} by ${me.full_name} | Confidential`,14,290);d.text(`Page ${i}/${n}`,196,290,{align:'right'})}
+ d.save('Status_'+(p.sku||p.name).replace(/[^\w-]+/g,'_')+'.pdf')}
+</script>
+</body>
+</html>
